@@ -27,9 +27,20 @@ app.post('/api/simplify', (req, res) => {
     
 })
 
-// app.post('/api/summarize', (req, res) => {
-//   
-// })
+app.post('/api/summarize', (req, res) => {
+    const textData = req.body
+
+    const apiCore = new ApiCore({ 
+        getSummarize: true,
+        textData: textData 
+    })
+
+    apiCore.simplifiedResponse()
+        .then((result) => res.json(result))
+        .catch((err) => {
+            console.error(err)
+        })
+})
 
 // app.post('/api/dictionary', (req, res) => {
 //

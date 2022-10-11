@@ -7,6 +7,8 @@
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 import axios from 'axios'
+import dotenv from "dotenv"
+dotenv.config()
 import { handleResponse, handleError } from './response.js'
 
 /** @param {string} textData */
@@ -18,16 +20,16 @@ const getSimplify = async (textData) => {
         "MaxTokens": 2480,
         "temperature": 0,
         "topKReturn": 0,
-        "topP":1,
-        "stopSequences":["."]
-      }
+        "topP": 1,
+        "stopSequences": ["."]
+    }
 
     try {
         const response = await axios.post("https://api.ai21.com/studio/v1/j1-jumbo/complete",
             apiBody,
             {
                 headers: {
-                    "Authorization": "Bearer IeOtRPMQtY84AiTQuc1CqWQjm7l9PDVq",
+                    "Authorization": process.env.SIMPLIFY_KEY,
                     "Content-Type": "application/json"
                 },
             })
@@ -35,17 +37,33 @@ const getSimplify = async (textData) => {
     } catch (error) {
         return handleError(error)
     }
-       
+
 }
 
 /** @param {string} textData */
 const getSummarize = async (textData) => {
-    // axios API call here
+
+    // Meaning cloud API
+    const formdata = new FormData();
+    formdata.append("key", process.env.SUMMARIZE_KEY);
+    formdata.append("txt", textData.text);
+    formdata.append("sentences", "2");
+
+    try {
+        const response = await axios({
+            method: "post",
+            url: "https://api.meaningcloud.com/summarization-1.0",
+            data: formdata,
+        })
+        return handleResponse(response)
+    } catch (error) {
+        return handleError(error)
+    }
 }
 
 /** @param {string} textData */
 const getDictionary = async (textData) => {
-     // axios API call here
+    // axios API call here
 }
 
 
