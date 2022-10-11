@@ -1,13 +1,13 @@
-// ? provider.js
-// ? Defines how axios or any api library should connect with
-// ? the database and connect our response data back
-// ? to any connected file or component
+// provider.js
+
+// Defines how axios or any api library should connect with
+// the database and connect our response data back
+// to any connected file or component
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 import axios from 'axios'
 import { handleResponse, handleError } from './response.js'
-
-// Define you api url from any source
-// Pulling from your .env file when on the server or from localhost when locally
 
 /** @param {string} textData */
 const getSimplify = async (textData) => {
@@ -21,7 +21,6 @@ const getSimplify = async (textData) => {
         "topP":1,
         "stopSequences":["."]
       }
-
 
     try {
         const response = await axios.post("https://api.ai21.com/studio/v1/j1-jumbo/complete",
@@ -39,8 +38,19 @@ const getSimplify = async (textData) => {
        
 }
 
+/** @param {string} textData */
+const getSummarize = async (textData) => {
+    // axios API call here
+}
+
+/** @param {string} textData */
+const getDictionary = async (textData) => {
+     // axios API call here
+}
 
 
 export const apiProvider = {
-    getSimplify
+    getSimplify,
+    getSummarize,
+    getDictionary
 }

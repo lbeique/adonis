@@ -2,7 +2,6 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { ApiCore } from './src/api/utilities/core.js'
 
-
 const app = express()
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -27,6 +26,15 @@ app.post('/api/simplify', (req, res) => {
         })
     
 })
+
+// app.post('/api/summarize', (req, res) => {
+//   
+// })
+
+// app.post('/api/dictionary', (req, res) => {
+//
+// })
+
 
 
 const port = process.env.PORT || 8080

@@ -1,6 +1,9 @@
-// ? response.js
-// ? clean separation for any response and error logic you
-// ? may want to handle here for all API calls
+// response.js
+
+// clean separation for any response and error logic you
+// may want to handle here for all API calls
+
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export function handleResponse(response){
 
