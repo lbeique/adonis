@@ -10,6 +10,7 @@ import axios from 'axios'
 import dotenv from "dotenv"
 dotenv.config()
 import { handleResponse, handleError } from './response.js'
+import FormData from 'form-data';
 
 /** @param {string} textData */
 const getSimplify = async (textData) => {
@@ -42,8 +43,9 @@ const getSimplify = async (textData) => {
 
 /** @param {string} textData */
 const getSummarize = async (textData) => {
+
     try {
-        
+
         // Meaning cloud API
         const formdata = new FormData();
         formdata.append("key", process.env.SUMMARIZE_KEY);
@@ -55,6 +57,7 @@ const getSummarize = async (textData) => {
             url: "https://api.meaningcloud.com/summarization-1.0",
             data: formdata,
         })
+
         return handleResponse(response)
     } catch (error) {
         return handleError(error)
