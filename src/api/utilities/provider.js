@@ -75,7 +75,7 @@ const getDictionary = async (textData) => {
         "X-RapidAPI-Host": "dictionary-by-api-ninjas.p.rapidapi.com",
       },
     });
-    return handleResponse(response);
+    return handleResponse(options);
   } catch (error) {
     return handleError(error);
   }
