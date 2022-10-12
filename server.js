@@ -12,38 +12,46 @@ app.get('/', (req, res) => {
 })
 
 app.post('/api/simplify', (req, res) => {
-    const textData = req.body
+    if (req.body.key == process.env.INTERNAL_KEY) {
+        const textData = req.body
 
-    const apiCore = new ApiCore({ 
-        getSimplify: true,
-        textData: textData 
-    })
-
-    apiCore.simplifiedResponse()
-        .then((result) => res.json(result))
-        .catch((err) => {
-            console.error(err)
+        const apiCore = new ApiCore({
+            getSimplify: true,
+            textData: textData
         })
-    
+
+        apiCore.simplifiedResponse()
+            .then((result) => res.json(result))
+            .catch((err) => {
+                console.error(err)
+            })
+    }
 })
 
 app.post('/api/summarize', (req, res) => {
-    const textData = req.body
+    req.header("Access-Control-Allow-Origin", "http://localhost:3000/")
+    console.log(req.body)
+    if (req.body.key == process.env.INTERNAL_KEY) {
+        const textData = req.body
+        
 
-    const apiCore = new ApiCore({ 
-        getSummarize: true,
-        textData: textData 
-    })
-
-    apiCore.simplifiedResponse()
-        .then((result) => res.json(result))
-        .catch((err) => {
-            console.error(err)
+        const apiCore = new ApiCore({
+            getSummarize: true,
+            textData: textData
         })
+
+        apiCore.summarizedResponse()
+            .then((result) => res.json(result))
+            .catch((err) => {
+                console.error(err)
+            })
+    }
 })
 
 // app.post('/api/dictionary', (req, res) => {
+// if (req.body.key == process.env.INTERNAL_KEY) {
 //
+// }
 // })
 
 

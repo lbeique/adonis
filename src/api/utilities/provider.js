@@ -42,14 +42,14 @@ const getSimplify = async (textData) => {
 
 /** @param {string} textData */
 const getSummarize = async (textData) => {
-
-    // Meaning cloud API
-    const formdata = new FormData();
-    formdata.append("key", process.env.SUMMARIZE_KEY);
-    formdata.append("txt", textData.text);
-    formdata.append("sentences", "2");
-
     try {
+        
+        // Meaning cloud API
+        const formdata = new FormData();
+        formdata.append("key", process.env.SUMMARIZE_KEY);
+        formdata.append("txt", textData.text);
+        formdata.append("sentences", "2");
+
         const response = await axios({
             method: "post",
             url: "https://api.meaningcloud.com/summarization-1.0",
