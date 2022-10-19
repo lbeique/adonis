@@ -20,7 +20,7 @@ const database = mysql
 
 export async function getUserByLogin (dbData) {
     const identifier = dbData.userEmail
-    const password = dbData.password
+    const password = dbData.userPassword
     const params = {
         identifier: identifier,
     }
@@ -52,7 +52,7 @@ export async function addUser (dbData) {
         const password = dbData.password
         const encryptedPassword = await bcrypt.hash(password, 10)
         const params = {
-            name: dbData.username,
+            name: dbData.userName,
             email: dbData.userEmail,
             password: encryptedPassword,
         }
@@ -78,13 +78,13 @@ export async function checkEmail (userEmail) {
     return user_matches[0][0]
 }
 
-export async function updateUserEmail (userId, userEmail) {
+export async function updateUserEmail (dbData) {
     const params = {
-        user_id: +userId,
-        user_email: userEmail
+        user_id: +dbData.userId,
+        user_email: dbData.userEmail
     }
 
-    const matches = await checkEmail(userEmail)
+    const matches = await checkEmail(dbData.userEmail)
     if (matches.user_matches === 0) {
         const sqlUpdateUserEmail = "UPDATE user SET user_email = :user_email WHERE user_id = :user_id;"
         await database.query(sqlUpdateUserEmail, params)
@@ -94,10 +94,10 @@ export async function updateUserEmail (userId, userEmail) {
     return
 }
 
-export async function updateUserName (userId, username) {
+export async function updateUserName (dbData) {
     const params = {
-        user_id: +userId,
-        user_name: username
+        user_id: +dbData.userId,
+        user_name: dbData.userName
     }
     const sqlUpdateUserName = "UPDATE user SET user_name = :user_name WHERE user_id = :user_id;"
     await database.query(sqlUpdateUserName, params)
@@ -124,7 +124,7 @@ export async function getSettingByID (settingId) {
         setting_id: +settingId,
     }
 
-    const sqlSelectSettingByID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.letter_spacing FROM setting WHERE setting_id = :setting_id;"
+    const sqlSelectSettingByID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.line_space, setting.letter_space FROM setting WHERE setting_id = :setting_id;"
     const setting_info = await database.query(sqlSelectSettingByID, params)
     console.log('db get setting by id', setting_info[0][0])
     return setting_info[0][0]
@@ -135,7 +135,7 @@ export async function getSettingByFileID (fileId) {
         file_id: +fileId,
     }
 
-    const sqlSelectSettingByFileID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.letter_spacing FROM file JOIN setting ON setting.setting_id = file.setting_id WHERE file_id = :file_id;"
+    const sqlSelectSettingByFileID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.line_space, setting.letter_space FROM file JOIN setting ON setting.setting_id = file.setting_id WHERE file_id = :file_id;"
     const setting_info = await database.query(sqlSelectSettingByFileID, params)
     console.log('db get setting by file id', setting_info[0][0])
     return setting_info[0][0]
@@ -146,7 +146,7 @@ export async function getSettingByUserID (userId) {
         user_id: +userId,
     }
 
-    const sqlSelectSettingByUserID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.letter_spacing FROM user JOIN setting ON setting.setting_id = user.setting_id WHERE user_id = :user_id;"
+    const sqlSelectSettingByUserID = "SELECT setting.setting_id, setting.background_colour, setting.typeface, setting.font_size, setting.line_space, setting.letter_space FROM user JOIN setting ON setting.setting_id = user.setting_id WHERE user_id = :user_id;"
     const setting_info = await database.query(sqlSelectSettingByUserID, params)
     console.log('db get setting by user id', setting_info[0][0])
     return setting_info[0][0]
@@ -156,10 +156,11 @@ export async function addSetting (dbData) {
     const params = {
         background_colour: dbData.backgroundColour,
         typeface: dbData.typeface,
-        font_size: dbData.font_size,
-        letter_spacing: dbData.letter_spacing
+        font_size: dbData.fontSize,
+        line_space: dbData.lineSpace,
+        letter_space: dbData.letterSpace
     }
-    const sqlInsertSetting = "INSERT INTO setting (background_colour, typeface, font_size, letter_spacing) VALUES (:background_colour, :typeface, :font_size, :letter_spacing);"
+    const sqlInsertSetting = "INSERT INTO setting (background_colour, typeface, font_size, line_space, letter_space) VALUES (:background_colour, :typeface, :font_size, :line_space, :letter_space);"
     const result = await database.query(sqlInsertSetting, params)
     if (result[0]) {
         const setting_info = await getSettingByID(result[0].insertId)
@@ -173,10 +174,11 @@ export async function updateSetting (dbData) {
         setting_id: +dbData.settingId,
         background_colour: dbData.backgroundColour,
         typeface: dbData.typeface,
-        font_size: dbData.font_size,
-        letter_spacing: dbData.letter_spacing
+        font_size: dbData.fontSize,
+        line_space: dbData.lineSpace,
+        letter_space: dbData.letterSpace
     }
-    const sqlUpdateSetting = "UPDATE setting SET background_colour = :background_colour, typeface = :typeface, font_size = :font_size, letter_spacing = :letter_spacing WHERE setting_id = :setting_id;"
+    const sqlUpdateSetting = "UPDATE setting SET background_colour = :background_colour, typeface = :typeface, font_size = :font_size, line_space = :line_space, letter_space = :letter_space WHERE setting_id = :setting_id;"
     await database.query(sqlUpdateSetting, params)
     const setting_info = await getSettingByID(dbData.settingId)
     console.log('db update setting', setting_info)
@@ -338,7 +340,7 @@ export async function addFile (dbData) {
 }
 
 
-export async function renameFile (dbData) {
+export async function updateFile (dbData) {
     const params = {
         file_id: +dbData.fileId,
         file_name: dbData.fileName
