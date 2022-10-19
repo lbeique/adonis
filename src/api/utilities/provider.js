@@ -69,7 +69,7 @@ const getDictionary = async (textData) => {
     const options = await axios({
       method: "GET",
       url: "https://dictionary-by-api-ninjas.p.rapidapi.com/v1/dictionary",
-      params: { word: req.query.word },
+      params: { word: textData.word },
       headers: {
         "X-RapidAPI-Key": "76d095f408mshdc3af774b5fe8d0p1f3c26jsn5f72e2906855",
         "X-RapidAPI-Host": "dictionary-by-api-ninjas.p.rapidapi.com",

@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/simplify", (req, res) => {
-  if (req.body.key == process.env.INTERNAL_KEY) {
+//   if (req.body.key == process.env.INTERNAL_KEY) {
     const textData = req.body;
 
     const apiCore = new ApiCore({
@@ -31,12 +31,12 @@ app.post("/api/simplify", (req, res) => {
       .catch((err) => {
         console.error(err);
       });
-  }
+//   }
 });
 
 app.post("/api/summarize", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  if (req.body.key == process.env.INTERNAL_KEY) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   if (req.body.key == process.env.INTERNAL_KEY) {
     const textData = req.body;
 
     const apiCore = new ApiCore({
@@ -50,13 +50,13 @@ app.post("/api/summarize", (req, res) => {
       .catch((err) => {
         console.error(err);
       });
-  }
+//   }
 });
 
 app.post("/api/dictionary", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
 
-  if (req.body.key == process.env.INTERNAL_KEY) {
+//   if (req.body.key == process.env.INTERNAL_KEY) {
     const textData = req.body;
 
     const apiCore = new ApiCore({
@@ -70,7 +70,7 @@ app.post("/api/dictionary", (req, res) => {
       .catch((err) => {
         console.error(err);
       });
-  }
+//   }
 });
 
 const port = process.env.PORT || 8080;

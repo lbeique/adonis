@@ -6,7 +6,7 @@
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 export function handleResponse(response){
-
+    // console.log(response)
     if(response.data){
         return response.data
     }
@@ -16,6 +16,7 @@ export function handleResponse(response){
 }
 
 export function handleError(error) {
+    // console.log(error)
     if (error.data) {
       return error.data;
     }
