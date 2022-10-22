@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { ApiCore } from "./src/api/utilities/core.js";
 import cors from "cors";
 import dotenv from "dotenv";
-import * as database from "./src/db/db"
+import * as database from "./src/db/db.js"
 dotenv.config();
 
 const app = express();

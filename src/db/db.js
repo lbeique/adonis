@@ -1,7 +1,7 @@
 import mysql from "mysql2"
 import dotenv from "dotenv"
 dotenv.config()
-const bcrypt = require('bcrypt')
+import bcrypt from 'bcrypt'
 
 const database = mysql
     .createPool({
