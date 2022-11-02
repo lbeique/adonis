@@ -515,7 +515,16 @@ app.get("/api/db/file/:id", async (req, res) => {
         res.status(404).send({ error: "There is no file with this id" })
         return
     }
-    res.status(200).send(file)
+    const setting = await database.getSettingByFileID(file.file_id)
+    if (!setting) {
+        res.status(404).send({ error: "There is no setting with this file id" })
+        return
+    }
+    const fileInfo = {
+        fileData: file,
+        settingData: setting
+    }
+    res.status(200).send(fileInfo)
     return
 });
 
@@ -585,7 +594,11 @@ app.post("/api/db/file", async (req, res) => {
     const setting = await database.addSetting(settingData)
     fileData.settingId = setting.setting_id
     const file = await database.addFile(fileData)
-    res.status(200).send(file)
+    const fileInfo = {
+        fileData: file,
+        settingData: setting
+    }
+    res.status(200).send(fileInfo)
     return
 });
 
