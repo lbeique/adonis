@@ -1,6 +1,6 @@
 # Hermes
 
-Hermes is an [express](https://expressjs.com/) backend that is meant to receive and respond to requests with Athena and the database.
+Hermes is an [express](https://expressjs.com/) backend that is meant to receive and respond to requests with Athena and the database. 
 
 
 ## Important Note
