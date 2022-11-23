@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-app.get("/", (req, res) => {
+app.get("/test", (req, res) => {
     res.send("working");
 });
 
@@ -305,6 +305,7 @@ app.post("/api/db/setting", async (req, res) => {
 // TESTED - Laurent
 app.put("/api/db/setting", async (req, res) => {
     // AUTH REQUIRED
+    console.log("What is this", req.body)
     if (!req.body) {
         res.status(400).send({ error: "setting data is missing" })
         return
@@ -618,6 +619,14 @@ app.put("/api/db/file", async (req, res) => {
         res.status(400).send({ error: "fileName is missing" })
         return
     }
+    if (!fileData.folderId) {
+        res.status(400).send({ error: "folderId is missing" })
+        return
+    }
+    if (!fileData.fileContent) {
+        res.status(400).send({ error: "folderId is missing" })
+        return
+    }
     const file = await database.updateFile(fileData)
     res.status(200).send(file)
     return
@@ -792,6 +801,107 @@ app.delete("/api/db/images/fileid/:fileid", async (req, res) => {
         return
     }
     await database.deleteImagesByFileId(fileId)
+    res.status(200).end()
+    return
+})
+
+// Keyword Routes
+
+app.get("/api/db/keyword/id/:id", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(400).send({ error: "id info is missing" })
+        return
+    }
+    const id = +req.params.id
+    if (Number.isNaN(id) || id == null) {
+        res.status(400).send({ error: "id type is incorrect" })
+        return
+    }
+    const keyword = await database.getKeywordByID(id)
+    if (!keyword) {
+        res.status(404).send({ error: "There is no keyword with this id" })
+        return
+    }
+    res.status(200).send(keyword)
+    return
+});
+
+app.get("/api/db/keywords/fileid/:fileid", async (req, res) => {
+    // AUTH REQUIRED
+
+    if (!req.params) {
+        res.status(400).send({ error: "fileId info is missing" })
+        return
+    }
+    const fileId = +req.params.fileid
+    if (Number.isNaN(fileId) || fileId == null) {
+
+        res.status(400).send({ error: "fileId type is incorrect" })
+        return
+    }
+    const keywords = await database.getKeywordsByFileID(fileId)
+    if (!keywords) {
+        res.status(404).send({ error: "There are no keywords with this folderid" })
+        return
+    }
+    res.status(200).send(keywords)
+    return
+});
+
+app.post("/api/db/keyword", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "all data is missing" })
+        return
+    }
+    const keywordData = req.body.keywordData
+    if (!keywordData) {
+        res.status(400).send({ error: "keyword data is missing" })
+        return
+    }
+    const keyword = await database.addKeyword(keywordData)
+    res.status(200).send(keyword)
+    return
+});
+
+app.put("/api/db/keyword", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "keyword data is missing" })
+        return
+    }
+    const keywordData = req.body.keywordData
+    if (!keywordData.keywordId) {
+        res.status(400).send({ error: "keywordId is missing" })
+        return
+    }
+    if (!keywordData.keywordName) {
+        res.status(400).send({ error: "keyword is missing" })
+        return
+    }
+    if (!keywordData.keywordDefinition) {
+        res.status(400).send({ error: "keyword is missing" })
+        return
+    }
+    const keyword = await database.updateKeyword(keywordData)
+    res.status(200).send(keyword)
+    return
+})
+
+app.delete("/api/db/keyword/:id", async (req, res) => {
+    // AUTH REQUIRED
+
+    if (!req.params) {
+        res.status(404).send({ error: "id info is missing" })
+        return
+    }
+    const id = +req.params.id
+    if (Number.isNaN(id) || id == null) {
+        res.status(400).send({ error: "id type is incorrect" })
+        return
+    }
+    await database.deleteKeyword(id)
     res.status(200).end()
     return
 })

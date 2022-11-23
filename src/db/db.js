@@ -344,7 +344,7 @@ export async function getFileNamesByFolderID(folderId) {
         folder_id: folderId,
     }
 
-    const sqlSelectFileNamesByFolderID = "SELECT file.file_id, file.file_name FROM folder JOIN file ON file.folder_id = folder.folder_id WHERE folder.folder_id = :folder_id;"
+    const sqlSelectFileNamesByFolderID = "SELECT file.file_id, file.file_name, file.file_content, file.folder_id FROM folder JOIN file ON file.folder_id = folder.folder_id WHERE folder.folder_id = :folder_id;"
     const all_file_info = await database.query(sqlSelectFileNamesByFolderID, params)
     console.log('db get file names by folder id', all_file_info[0])
     return all_file_info[0]
@@ -356,7 +356,7 @@ export async function getFileNamesByUserID(userId) {
         user_id: userId,
     }
 
-    const sqlSelectFileNamesByUserID = "SELECT file.file_id, file.file_name FROM user JOIN file ON file.user_id = user.user_id WHERE user.user_id = :user_id;"
+    const sqlSelectFileNamesByUserID = "SELECT file.file_id, file.file_name, file.file_content FROM user JOIN file ON file.user_id = user.user_id WHERE user.user_id = :user_id;"
     const all_file_info = await database.query(sqlSelectFileNamesByUserID, params)
     console.log('db get file names by user id', all_file_info[0])
     return all_file_info[0]
@@ -386,9 +386,11 @@ export async function addFile(dbData) {
 export async function updateFile(dbData) {
     const params = {
         file_id: dbData.fileId,
-        file_name: dbData.fileName
+        file_name: dbData.fileName,
+        file_content: dbData.fileContent,
+        folder_id: dbData.folderId
     }
-    const sqlUpdateFile = "UPDATE file SET file_name = :file_name WHERE file_id = :file_id;"
+    const sqlUpdateFile = "UPDATE file SET file_name = :file_name, file_content = :file_content, folder_id = :folder_id WHERE file_id = :file_id;"
     await database.query(sqlUpdateFile, params)
     const file_info = await getFileByID(dbData.fileId)
     console.log('db rename file', file_info)
@@ -513,5 +515,72 @@ export async function deleteImagesByFileId(fileId) {
     const sqlDeleteImage = "DELETE FROM image WHERE file_id = :file_id;"
     await database.query(sqlDeleteImage, params)
     console.log('db images from file deleted')
+    return
+}
+
+// KEYWORDS //
+
+export async function getKeywordByID(keywordId) {
+    const params = {
+        keyword_id: keywordId,
+    }
+
+    const sqlSelectKeyWordByID = "SELECT keyword.keyword_id, keyword.keyword_name, keyword.keyword_definition FROM keyword WHERE keyword.keyword_id = :keyword_id;"
+    const keyword_info = await database.query(sqlSelectKeyWordByID, params)
+    console.log('db get keyword by id', keyword_info[0][0])
+    return keyword_info[0][0]
+}
+
+export async function getKeywordsByFileID(fileId) {
+    const params = {
+        file_id: fileId,
+    }
+
+    const sqlSelectKeyWordsByFileID = "SELECT keyword.keyword_id, keyword.keyword_name, keyword.keyword_definition FROM keyword WHERE keyword.file_id = :file_id;"
+    const all_file_keywords = await database.query(sqlSelectKeyWordsByFileID, params)
+    console.log('db get keywords by file id', all_file_keywords[0])
+    return all_file_keywords[0]
+}
+
+export async function addKeyword(dbData) {
+    const params = {
+        file_id: dbData.fileId,
+        keyword_name: dbData.keywordName,
+        keyword_definition: dbData.keywordDefinition,
+    }
+    const sqlInsertKeyWord = "INSERT INTO keyword (file_id, keyword_name, keyword_definition) VALUES (:file_id, :keyword_name, :keyword_definition);"
+    const file = await getFileByID(dbData.fileId)
+    if (file) {
+        const result = await database.query(sqlInsertKeyWord, params)
+        if (result[0]) {
+            const keyword_info = await getKeywordByID(result[0].insertId)
+            console.log('db add keyword', keyword_info)
+            return keyword_info
+        }
+        return
+    }
+    return
+}   
+
+export async function updateKeyword(dbData) {
+    const params = {
+        keyword_id: dbData.keywordId,
+        keyword_name: dbData.keywordName,
+        keyword_definition: dbData.keywordDefinition,
+    }
+    const sqlUpdateKeyWord = "UPDATE keyword SET keyword_name = :keyword_name, keyword_definition = :keyword_definition WHERE keyword_id = :keyword_id;"
+    await database.query(sqlUpdateKeyWord, params)
+    const keyword_info = await getKeywordByID(dbData.keywordId)
+    console.log('db update keyword', keyword_info)
+    return keyword_info
+}
+
+export async function deleteKeyword(keywordId) {
+    const params = {
+        keyword_id: keywordId
+    }
+    const sqlDeleteKeyWord = "DELETE FROM keyword WHERE keyword_id = :keyword_id;"
+    await database.query(sqlDeleteKeyWord, params)
+    console.log('db keyword deleted')
     return
 }
