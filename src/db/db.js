@@ -408,6 +408,8 @@ export async function deleteFile(fileId) {
         return
     }
     await deleteImagesByFileId(fileId)
+    await deleteKeywordsByFileId(fileId)
+    await deleteSummariesByFileId(fileId)
     await database.query(sqlDeleteFile, params)
     await deleteSetting(setting.setting_id)
     console.log('db file deleted')
@@ -492,7 +494,7 @@ export async function updateImage(dbData) {
     }
     const sqlUpdateImage = "UPDATE image SET image_link = :image_link, image_alt_text = :image_alt_text WHERE image_id = :image_id;"
     await database.query(sqlUpdateImage, params)
-    const image_info = await getImageByID(dbData.filedId)
+    const image_info = await getImageByID(dbData.fileId)
     console.log('db update image', image_info)
     return image_info
 }
@@ -560,7 +562,7 @@ export async function addKeyword(dbData) {
         return
     }
     return
-}   
+}
 
 export async function updateKeyword(dbData) {
     const params = {
@@ -582,5 +584,90 @@ export async function deleteKeyword(keywordId) {
     const sqlDeleteKeyWord = "DELETE FROM keyword WHERE keyword_id = :keyword_id;"
     await database.query(sqlDeleteKeyWord, params)
     console.log('db keyword deleted')
+    return
+}
+
+export async function deleteKeywordsByFileId(fileId) {
+    const params = {
+        file_id: fileId
+    }
+    const sqlDeleteKeyWord = "DELETE FROM keyword WHERE file_id = :file_id;"
+    await database.query(sqlDeleteKeyWord, params)
+    console.log('db keywords from file deleted')
+    return
+}
+
+// SUMMARY //
+
+export async function getSummaryByID(summaryId) {
+    const params = {
+        summary_id: summaryId,
+    }
+    const sqlSelectSummaryByID = "SELECT summary.summary_id, summary.file_id, summary.summary_content, summary.summary_result FROM summary WHERE summary.summary_id = :summary_id;"
+    const summary_info = await database.query(sqlSelectSummaryByID, params)
+    console.log('db get summary by id', summary_info[0][0])
+    return summary_info[0][0]
+}
+
+export async function getSummariesByFileID(fileId) {
+    const params = {
+        file_id: fileId,
+    }
+    const sqlSelectSummariesByFileID = "SELECT summary.summary_id, summary.file_id, summary.summary_content, summary.summary_result FROM summary WHERE summary.file_id = :file_id;"
+    const all_file_summaries = await database.query(sqlSelectSummariesByFileID, params)
+    console.log('db get summaries by file id', all_file_summaries[0])
+    return all_file_summaries[0]
+}
+
+export async function addSummary(dbData) {
+    const params = {
+        file_id: dbData.fileId,
+        summary_content: dbData.summaryContent,
+        summary_result: dbData.summaryResult,
+    }
+    const sqlInsertSummary = "INSERT INTO summary (file_id, summary_content, summary_result) VALUES (:file_id, :summary_content, :summary_result);"
+    const file = await getFileByID(dbData.fileId)
+    if (file) {
+        const result = await database.query(sqlInsertSummary, params)
+        if (result[0]) {
+            const summary_info = await getSummaryByID(result[0].insertId)
+            console.log('db add summary', summary_info)
+            return summary_info
+        }
+        return
+    }
+    return
+}
+
+export async function updateSummary(dbData) {
+    const params = {
+        summary_id: dbData.summaryId,
+        summary_content: dbData.summaryContent,
+        summary_result: dbData.summaryResult,
+    }
+    const sqlUpdateSummary = "UPDATE summary SET summary_content = :summary_content, summary_result = :summary_result WHERE summary_id = :summary_id;"
+    await database.query(sqlUpdateSummary, params)
+    const summary_info = await getSummaryByID(dbData.summaryId)
+    console.log('db update summary', summary_info)
+    return summary_info
+}
+
+export async function deleteSummary(summaryId) {
+    const params = {
+        summary_id: summaryId
+    }
+    const sqlDeleteSummary = "DELETE FROM summary WHERE summary_id = :summary_id;"
+    await database.query(sqlDeleteSummary, params)
+    console.log('db summary deleted')
+    return
+}
+
+export async function deleteSummariesByFileId(fileId) {
+    const params = {
+        file_id: fileId
+    }
+    const sqlDeleteSummary = "DELETE FROM summary WHERE file_id = :file_id;"
+    await database.query(sqlDeleteSummary, params)
+    console.log('db summaries from file deleted')
     return
 }

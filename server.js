@@ -807,7 +807,7 @@ app.delete("/api/db/images/fileid/:fileid", async (req, res) => {
 
 // Keyword Routes
 
-app.get("/api/db/keyword/id/:id", async (req, res) => {
+app.get("/api/db/keyword/:id", async (req, res) => {
     // AUTH REQUIRED
     if (!req.params) {
         res.status(400).send({ error: "id info is missing" })
@@ -906,6 +906,103 @@ app.delete("/api/db/keyword/:id", async (req, res) => {
     return
 })
 
+// Summary Routes
+
+app.get("/api/db/summary/:id", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(400).send({ error: "id info is missing" })
+        return
+    }
+    const id = +req.params.id
+    if (Number.isNaN(id) || id == null) {
+        res.status(400).send({ error: "id type is incorrect" })
+        return
+    }
+    const summary = await database.getSummaryByID(id)
+    if (!summary) {
+        res.status(404).send({ error: "There is no summary with this id" })
+        return
+    }
+    res.status(200).send(summary)
+    return
+});
+
+app.get("/api/db/summaries/fileid/:fileid", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(400).send({ error: "fileId info is missing" })
+        return
+    }
+    const fileId = +req.params.fileid
+    if (Number.isNaN(fileId) || fileId == null) {
+        res.status(400).send({ error: "fileId type is incorrect" })
+        return
+    }
+    const summaries = await database.getSummariesByFileID(fileId)
+    if (!summaries) {
+        res.status(404).send({ error: "There are no summaries with this folderid" })
+        return
+    }
+    res.status(200).send(summaries)
+    return
+});
+
+app.post("/api/db/summary", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "all data is missing" })
+        return
+    }
+    const summaryData = req.body.summaryData
+    if (!summaryData) {
+        res.status(400).send({ error: "summary data is missing" })
+        return
+    }
+    const summary = await database.addSummary(summaryData)
+    res.status(200).send(summary)
+    return
+});
+
+app.put("/api/db/summary", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "summary data is missing" })
+        return
+    }
+    const summaryData = req.body.summaryData
+    if (!summaryData.summaryId) {
+        res.status(400).send({ error: "summaryId is missing" })
+        return
+    }
+    if (!summaryData.summaryName) {
+        res.status(400).send({ error: "summary is missing" })
+        return
+    }
+    if (!summaryData.summaryDefinition) {
+        res.status(400).send({ error: "summary is missing" })
+        return
+    }
+    const summary = await database.updateSummary(summaryData)
+    res.status(200).send(summary)
+    return
+})
+
+app.delete("/api/db/summary/:id", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(404).send({ error: "id info is missing" })
+        return
+    }
+    const id = +req.params.id
+    if (Number.isNaN(id) || id == null) {
+        res.status(400).send({ error: "id type is incorrect" })
+        return
+    }
+    await database.deleteSummary(id)
+    res.status(200).end()
+    return
+})
 
 // App Listen
 
