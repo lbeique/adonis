@@ -620,6 +620,7 @@ export async function getSummariesByFileID(fileId) {
 }
 
 export async function addSummary(dbData) {
+    console.log("ADD SUMMARY", dbData)
     const params = {
         file_id: dbData.fileId,
         summary_content: dbData.summaryContent,
