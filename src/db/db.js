@@ -410,6 +410,7 @@ export async function deleteFile(fileId) {
     await deleteImagesByFileId(fileId)
     await deleteKeywordsByFileId(fileId)
     await deleteSummariesByFileId(fileId)
+    await deleteHighlightsByFileId(fileId)
     await database.query(sqlDeleteFile, params)
     await deleteSetting(setting.setting_id)
     console.log('db file deleted')
@@ -670,5 +671,78 @@ export async function deleteSummariesByFileId(fileId) {
     const sqlDeleteSummary = "DELETE FROM summary WHERE file_id = :file_id;"
     await database.query(sqlDeleteSummary, params)
     console.log('db summaries from file deleted')
+    return
+}
+
+// HIGHLIGHT //
+
+export async function getHighlightByID(highlightId) {
+    const params = {
+        highlight_id: highlightId,
+    }
+    const sqlSelectHighlightByID = "SELECT highlight.file_id, highlight.highlight_uuid FROM highlight WHERE highlight.highlight_id = :highlight_id;"
+    const highlight_info = await database.query(sqlSelectHighlightByID, params)
+    console.log('db get highlight by id', highlight_info[0][0])
+    return highlight_info[0][0]
+}
+
+export async function getHighlightsByFileID(fileId) {
+    const params = {
+        file_id: fileId,
+    }
+    const sqlSelectHighlightsByFileID = "SELECT highlight.file_id, highlight.highlight_uuid FROM highlight WHERE highlight.file_id = :file_id;"
+    const all_file_highlights = await database.query(sqlSelectHighlightsByFileID, params)
+    console.log('db get highlights by file id', all_file_highlights[0])
+    return all_file_highlights[0]
+}
+
+export async function addHighlight(dbData) {
+    const params = {
+        file_id: dbData.fileId,
+        highlight_uuid: dbData.highlightId,
+    }
+    const sqlInsertHighlight = "INSERT INTO highlight (file_id, highlight_uuid) VALUES (:file_id, :highlight_uuid);"
+    const file = await getFileByID(dbData.fileId)
+    if (file) {
+        const result = await database.query(sqlInsertHighlight, params)
+        if (result[0]) {
+            const highlight_info = await getHighlightByID(result[0].insertId)
+            console.log('db add highlight', highlight_info)
+            return highlight_info
+        }
+        return
+    }
+    return
+}
+
+export async function updateHighlight(dbData) {
+    const params = {
+        file_id: dbData.fileId,
+        highlight_uuid: dbData.highlightId,
+    }
+    const sqlUpdateHighlight = "UPDATE highlight SET highlight_uuid = :highlight_uuid, file_id = :file_id WHERE highlight_uuid = :highlight_uuid;"
+    await database.query(sqlUpdateHighlight, params)
+    const highlight_info = await getHighlightByID(dbData.highlightId)
+    console.log('db update highlight', highlight_info)
+    return highlight_info
+}
+
+export async function deleteHighlight(highlightId) {
+    const params = {
+        highlight_uuid: highlightId
+    }
+    const sqlDeleteHighlight = "DELETE FROM highlight WHERE highlight_uuid = :highlight_uuid;"
+    await database.query(sqlDeleteHighlight, params)
+    console.log('db highlight deleted')
+    return
+}
+
+export async function deleteHighlightsByFileId(fileId) {
+    const params = {
+        file_id: fileId
+    }
+    const sqlDeleteHighlight = "DELETE FROM highlight WHERE file_id = :file_id;"
+    await database.query(sqlDeleteHighlight, params)
+    console.log('db highlights from file deleted')
     return
 }

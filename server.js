@@ -941,7 +941,7 @@ app.get("/api/db/summaries/fileid/:fileid", async (req, res) => {
     }
     const summaries = await database.getSummariesByFileID(fileId)
     if (!summaries) {
-        res.status(404).send({ error: "There are no summaries with this folderid" })
+        res.status(404).send({ error: "There are no summaries with this fileid" })
         return
     }
     res.status(200).send(summaries)
@@ -1003,6 +1003,100 @@ app.delete("/api/db/summary/:id", async (req, res) => {
     res.status(200).end()
     return
 })
+
+// Highlight Routes
+
+app.get("/api/db/highlight/:id", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(400).send({ error: "id info is missing" })
+        return
+    }
+    const id = +req.params.id
+    if (Number.isNaN(id) || id == null) {
+        res.status(400).send({ error: "id type is incorrect" })
+        return
+    }
+    const highlight = await database.getHighlightByID(id)
+    if (!highlight) {
+        res.status(404).send({ error: "There is no highlight with this id" })
+        return
+    }
+    res.status(200).send(highlight)
+    return
+});
+
+app.get("/api/db/highlights/fileid/:fileid", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(400).send({ error: "fileId info is missing" })
+        return
+    }
+    const fileId = +req.params.fileid
+    if (Number.isNaN(fileId) || fileId == null) {
+        res.status(400).send({ error: "fileId type is incorrect" })
+        return
+    }
+    const highlights = await database.getHighlightsByFileID(fileId)
+    if (!highlights) {
+        res.status(404).send({ error: "There are no highlights with this fileid" })
+        return
+    }
+    res.status(200).send(highlights)
+    return
+});
+
+app.post("/api/db/highlight", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "highlight data is missing" })
+        return
+    }
+    const highlightData = req.body.highlightData
+    if (!highlightData.highlightId) {
+        res.status(400).send({ error: "highlightId is missing" })
+        return
+    }
+    if (!highlightData.fileId) {
+        res.status(400).send({ error: "fileId is missing" })
+        return
+    }
+    const highlight = await database.addHighlight(highlightData)
+    res.status(200).send(highlight)
+    return
+});
+
+app.put("/api/db/highlight", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.body) {
+        res.status(400).send({ error: "highlight data is missing" })
+        return
+    }
+    const highlightData = req.body.highlightData
+    if (!highlightData.highlightId) {
+        res.status(400).send({ error: "highlightId is missing" })
+        return
+    }
+    if (!highlightData.fileId) {
+        res.status(400).send({ error: "fileId is missing" })
+        return
+    }
+    const highlight = await database.updateHighlight(highlightData)
+    res.status(200).send(highlight)
+    return
+});
+
+app.delete("/api/db/highlight/:id", async (req, res) => {
+    // AUTH REQUIRED
+    if (!req.params) {
+        res.status(404).send({ error: "id info is missing" })
+        return
+    }
+    const id = req.params.id
+    await database.deleteHighlight(id)
+    res.status(200).end()
+    return
+});
 
 // App Listen
 
